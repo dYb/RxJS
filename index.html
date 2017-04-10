@@ -1,12 +1,39 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>RxJS Boiler</title>
-</head>
-<body>
-	<h1>RxJS Boiler</h1>
-	<p>For more info, visit <a target="_blank" href="https://github.com/bradtraversy/rxjs_boiler">https://github.com/bradtraversy/rxjs_boiler</a></p>
-
-	<script src="./dist/app.bundle.js"></script>
-</body>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .wrapper {
+        position: relative;
+      }
+      .rect {
+        position: absolute;
+        left: 0; top: 0;
+        display: flex;
+        width: 200px; height: 200px;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: #000;
+        -webkit-user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="btn1">+1S</button>
+    <button class="btn11">Stop</button>
+    <div class="text"></div>
+    <hr />
+    <input class="user" />
+    <ul class="info"></ul>
+    <hr />
+    <button class="btn2">PRESS ME</button>
+    <hr />
+    <div class="wrapper">
+      <div class="rect">DRAG ME</div>
+    </div>
+    <script src="app.bundle.js"></script>
+  </body>
 </html>
