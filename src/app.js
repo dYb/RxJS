@@ -81,24 +81,42 @@ const { Observable } = Rx
   function render(x, y) {
     rect.css({ left: x, top: y })
   }
-  const down$ = Observable.fromEvent(rect, 'mousedown')
-  const move$ = Observable.fromEvent(rect, 'mousemove')
-  const up$ = Observable.fromEvent(rect, 'mouseup')
+  function getPosition(e) {
+    return {
+      x: e.clientX,
+      y: e.clientY,
+    }
+  }
+  const down$ = Observable.fromEvent(rect, 'mousedown').map(getPosition)
+  const move$ = Observable.fromEvent(rect, 'mousemove').map(getPosition)
+  const up$ = Observable.fromEvent(rect, 'mouseup').map(getPosition)
+  const startPoint$ = Observable.merge(down$, up$)
+    .bufferCount(2, 2)
+    .scan((acc, [start, end]) => {
+      return {
+        x: acc.x + end.x - start.x,
+        y: acc.y + end.y - start.y
+      }
+    }, { x: 0, y: 0})
+
   down$
     .do(() => console.log('drag start'))
-    .map((e) => {
+    .withLatestFrom(startPoint$.startWith({ x: 0, y: 0 }))
+    .map(([current, start]) => {
       return {
-        x: e.pageX - e.target.offsetLeft,
-        y: e.pageY - e.target.offsetTop,
+        x: current.x - start.x,
+        y: current.y - start.y,
       }
     })
-    .switchMap(({ x, y }) => {
-      return move$.map((e) => {
+    .switchMap((start) => {
+      return move$.map(({ x, y }) => {
         return {
-          x: e.pageX - x,
-          y: e.pageY - y,
+          x: x - start.x,
+          y: y - start.y,
         }
-      }).takeUntil(up$.do(() => console.log('drag end')))
+      }).takeUntil(up$.do(({ x, y }) => {
+        console.log('drag end')
+      }))
     })
     .subscribe(({ x, y }) => {
       render(x, y)
@@ -149,7 +167,7 @@ const { Observable } = Rx
   //   }, 1000)
   // })
   // console.info('Observer before suscribe')
-  // o$.subscribe(val => console.log(val)) 
+  // o$.subscribe(val => console.log(val))
 
 }
 
@@ -173,7 +191,7 @@ const { Observable } = Rx
   //     (err) => console.error(err),
   //     () => console.log('complete!')
   //   )
-  
+
   // Use catch to catch the error
   // Observable.interval(1000)
   //   .switchMap(x => Observable.fromPromise(errorWhen2(x)))
